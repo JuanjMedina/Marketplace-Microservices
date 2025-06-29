@@ -25,3 +25,8 @@ services:
         - "8085:8080"
     depends_on:
       - postgres-keycloak
+volumes:
+    postgres-data:
+        driver: local
+    postgres-keycloak:
+        driver: local
