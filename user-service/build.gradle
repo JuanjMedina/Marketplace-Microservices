@@ -26,6 +26,7 @@ dependencies {
     implementation 'org.jboss.resteasy:resteasy-core:6.2.7.Final'
     implementation 'org.jboss.resteasy:resteasy-client:6.2.7.Final'
     implementation 'org.jboss.resteasy:resteasy-jackson2-provider:6.2.7.Final'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
