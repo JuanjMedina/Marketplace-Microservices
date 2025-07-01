@@ -1,18 +1,21 @@
 package com.marketplace.userservice.service;
 
+import com.marketplace.userservice.controller.dto.ApiResponseDTO;
 import com.marketplace.userservice.controller.dto.UserDTO;
 import org.keycloak.representations.idm.UserRepresentation;
 
 import java.util.List;
 
 public interface IKeycloakService {
-    List<UserRepresentation> findAllUsers();
+    ApiResponseDTO<List<UserRepresentation>> findAllUsers();
 
-    List<UserRepresentation> searchUserByUsername(String username);
+    ApiResponseDTO<UserRepresentation> searchUserByUsername(String username);
 
-    String createUSer(UserDTO userDTO);
+    ApiResponseDTO<String> createUser(UserDTO userDTO);
 
-    void deleteUser(String userId);
+    ApiResponseDTO<String> deleteUser(String userId);
 
-    void updateUser(String userId, UserDTO userDto);
+    ApiResponseDTO<String > updateUser(String userId, UserDTO userDto);
+
+    ApiResponseDTO<UserRepresentation> findUserById(String userId);
 }
