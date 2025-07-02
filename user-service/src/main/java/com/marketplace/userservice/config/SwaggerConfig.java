@@ -16,9 +16,7 @@ public class SwaggerConfig {
                         .title("Marketplace User Service API")
                         .version("1.0.0")
                         .description("API documentation for the Marketplace User Service")
-                        .contact(new Contact().name("Juan Medina ").email("jmedinaguerrero847@gmail.com"))
-
-
+                        .contact(new Contact().name("Juan Medina").email("jmedinaguerrero847@gmail.com"))
                 );
     }
 
@@ -26,7 +24,7 @@ public class SwaggerConfig {
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
                 .group("marketplace-user-service-public")
-                .pathsToMatch("/api/keycloak/user/**")
+                .pathsToMatch("/api/**")
                 .build();
     }
 }
