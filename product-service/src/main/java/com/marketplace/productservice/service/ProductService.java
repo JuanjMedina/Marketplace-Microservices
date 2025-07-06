@@ -48,7 +48,6 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    @PreAuthorize("hasRole('') or hasRole('ROLE_ADMIN')")
     public ApiResponseDTO<Product> createProduct(@NonNull Product product) {
         // This method should create a new product.
 

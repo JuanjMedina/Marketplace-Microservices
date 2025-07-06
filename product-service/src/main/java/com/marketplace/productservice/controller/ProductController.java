@@ -34,7 +34,7 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
-    //    @PreAuthorize("hasRole('admin_client_role')")
+    @PreAuthorize("hasRole('admin_client_role') or hasRole('seller_client_role')")
     @PostMapping
     ResponseEntity<ApiResponseDTO<Product>> createProduct(@Valid @RequestBody ProductDto productDto, @AuthenticationPrincipal Jwt jwt) {
         // Extract the seller ID from the JWT token
