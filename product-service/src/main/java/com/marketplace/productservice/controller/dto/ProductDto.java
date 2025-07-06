@@ -24,9 +24,10 @@ public record ProductDto(
         Integer quantity
 
 ) {
-    public static Product mapToProduct(ProductDto productDto ) {
+    public static Product mapToProduct(ProductDto productDto, String sellerId) {
         return Product.builder()
                 .name(productDto.name())
+                .sellerId(sellerId)
                 .description(productDto.description())
                 .price(productDto.price())
                 .quantity(productDto.quantity())

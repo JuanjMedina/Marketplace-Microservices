@@ -7,6 +7,7 @@ import com.marketplace.productservice.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,6 +48,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @PreAuthorize("hasRole('') or hasRole('ROLE_ADMIN')")
     public ApiResponseDTO<Product> createProduct(@NonNull Product product) {
         // This method should create a new product.
 

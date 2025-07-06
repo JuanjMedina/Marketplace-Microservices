@@ -37,8 +37,14 @@ services:
       - "8085:8080"
     depends_on:
       - postgres-keycloak
+
+    volumes:
+      - ./keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
+
 volumes:
   postgres-keycloak-data:
     driver: local
   postgres-product-data:
+    driver: local
+  keycloak-data:
     driver: local
