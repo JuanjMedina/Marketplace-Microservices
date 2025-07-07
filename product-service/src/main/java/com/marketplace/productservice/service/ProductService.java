@@ -1,16 +1,21 @@
 package com.marketplace.productservice.service;
 
 import com.marketplace.productservice.controller.dto.ApiResponseDTO;
+import com.marketplace.productservice.controller.dto.ProductFilterCriteria;
 import com.marketplace.productservice.entity.Product;
 import com.marketplace.productservice.exception.ProductNotFoundException;
 import com.marketplace.productservice.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -19,11 +24,14 @@ public class ProductService implements IProductService {
     private final ProductRepository productRepository;
 
     @Override
-    public ApiResponseDTO<List<Product>> getAllProducts() {
-        // This method should return a list of all products.
-        List<Product> products = productRepository.findAll();
+    public ApiResponseDTO<Page<Product>> getAllProducts(ProductFilterCriteria filters, Pageable page) {
 
-        return ApiResponseDTO.<List<Product>>builder()
+        Specification<Product> spec = ProductSpecification.findByCriteria(filters);
+
+        // This method should return a list of all products.
+        Page<Product> products = productRepository.findAll(spec, page);
+
+        return ApiResponseDTO.<Page<Product>>builder()
                 .data(products)
                 .message(products.isEmpty() ? "No products found" : "Products retrieved successfully")
                 .success(true)
@@ -83,4 +91,37 @@ public class ProductService implements IProductService {
                 .data(null)
                 .build();
     }
+
+    @Override
+    public ApiResponseDTO<Product> updatePartialProduct(String id, Product product) {
+        Optional<Product> productUpdate = productRepository.findById(id);
+
+        if (productUpdate.isEmpty()) {
+            throw new ProductNotFoundException("Product not found with ID: " + id, HttpStatus.NOT_FOUND);
+        }
+
+        if (product.getName() != null) {
+            productUpdate.get().setName(product.getName());
+        }
+        if (product.getDescription() != null) {
+            productUpdate.get().setDescription(product.getDescription());
+        }
+        if (product.getPrice() != null) {
+            productUpdate.get().setPrice(product.getPrice());
+        }
+        if (product.getQuantity() != null) {
+            productUpdate.get().setQuantity(product.getQuantity());
+        }
+
+        productRepository.save(productUpdate.get());
+
+
+        return ApiResponseDTO.<Product>builder()
+                .message("Product updated successfully")
+                .success(true)
+                .data(productUpdate.get())
+                .build();
+    }
+
+
 }

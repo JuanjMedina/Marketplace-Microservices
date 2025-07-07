@@ -30,10 +30,12 @@ public class Product {
     @Column(nullable = true)
     private String imageUrl;
 
+     private String category;
+
     @Column(nullable = false)
     private String sellerId;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt ;
     private LocalDateTime updatedAt;
 
     @PrePersist

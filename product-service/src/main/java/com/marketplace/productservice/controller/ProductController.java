@@ -2,10 +2,16 @@ package com.marketplace.productservice.controller;
 
 import com.marketplace.productservice.controller.dto.ApiResponseDTO;
 import com.marketplace.productservice.controller.dto.ProductDto;
+import com.marketplace.productservice.controller.dto.ProductFilterCriteria;
+import com.marketplace.productservice.controller.dto.ProductUpdateDto;
 import com.marketplace.productservice.entity.Product;
 import com.marketplace.productservice.service.IProductService;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,8 +29,8 @@ public class ProductController {
     private final IProductService productService;
 
     @GetMapping
-    public ResponseEntity<ApiResponseDTO<List<Product>>> getAllProducts() {
-        ApiResponseDTO<List<Product>> products = productService.getAllProducts();
+    public ResponseEntity<ApiResponseDTO<Page<Product>>> getAllProducts(ProductFilterCriteria filters, Pageable pageable) {
+        ApiResponseDTO<Page<Product>> products = productService.getAllProducts(filters, pageable);
         return ResponseEntity.ok(products);
     }
 
@@ -33,6 +39,7 @@ public class ProductController {
         ApiResponseDTO<Product> product = productService.getProductById(id);
         return ResponseEntity.ok(product);
     }
+
 
     @PreAuthorize("hasRole('admin_client_role') or hasRole('seller_client_role')")
     @PostMapping
@@ -44,6 +51,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
+    @PreAuthorize("hasRole('admin_client_role') or hasRole('seller_client_role')")
     @DeleteMapping("/{productId}")
     public ResponseEntity<ApiResponseDTO<Void>> deleteProduct(@PathVariable("productId") String id) {
         ApiResponseDTO<Void> response = productService.deleteProduct(id);
@@ -51,10 +59,23 @@ public class ProductController {
     }
 
 
+    @PreAuthorize("hasRole('admin_client_role') or hasRole('seller_client_role')")
     @PutMapping("/{productId}")
     public ResponseEntity<ApiResponseDTO<Product>> updateProduct(@PathVariable("productId") String id, @RequestBody ProductDto productDto) {
         Product mapToProduct = ProductDto.mapToProduct(productDto, null);
         ApiResponseDTO<Product> updatedProduct = productService.updateProduct(id, mapToProduct);
         return ResponseEntity.ok(updatedProduct);
     }
+
+
+    @PreAuthorize("hasRole('admin_client_role') or hasRole('seller_client_role')")
+    @PatchMapping("/{productId}")
+    public ResponseEntity<?> updatePartialProduct(@PathVariable("productId") String productId, @RequestBody ProductUpdateDto productUpdateDto) {
+        Product mapToProduct = ProductUpdateDto.mapToProduct(productUpdateDto);
+        ApiResponseDTO<Product> updatedProduct = productService.updatePartialProduct(productId, mapToProduct);
+        return ResponseEntity.ok(updatedProduct);
+
+    }
+
+
 }
