@@ -29,30 +29,30 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/products")
 @AllArgsConstructor
-@Tag(name = "Product Management", description = "API para gestionar productos del marketplace")
+@Tag(name = "Product Management", description = "Operations for managing products in the marketplace")
 public class ProductController {
 
     private final IProductService productService;
 
     @GetMapping
     @Operation(
-            summary = "Obtener todos los productos",
-            description = "Obtiene una lista paginada de productos con filtros opcionales como categoría, precio mínimo/máximo, estado, etc.",
+            summary = "Get all products",
+            description = "Retrieve a paginated list of products with optional filters such as category, price range, status, etc.",
             parameters = {
-                    @Parameter(name = "filters", description = "Criterios de filtrado para productos", schema = @Schema(implementation = ProductFilterCriteria.class)),
-                    @Parameter(name = "pageable", description = "Información de paginación", schema = @Schema(implementation = Pageable.class))
+                    @Parameter(name = "filters", description = "Filter criteria for products", schema = @Schema(implementation = ProductFilterCriteria.class)),
+                    @Parameter(name = "pageable", description = "Pagination information", schema = @Schema(implementation = Pageable.class))
             }
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Lista de productos obtenida exitosamente",
+                    description = "List of products retrieved successfully",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Products List Response",
-                                    description = "Ejemplo de respuesta con lista paginada de productos",
+                                    description = "Example response with paginated list of products",
                                     value = """
                                             {
                                               "message": "Products retrieved successfully",
@@ -62,10 +62,10 @@ public class ProductController {
                                                   {
                                                     "id": "prod-001",
                                                     "name": "Smartphone Samsung Galaxy S24",
-                                                    "description": "Teléfono inteligente con pantalla de 6.1 pulgadas",
+                                                    "description": "Smartphone with 6.1 inch display",
                                                     "price": 899.99,
                                                     "category": "Electronics",
-                                                    "stock": 50,
+                                                    "quantity": 50,
                                                     "sellerId": "seller-123",
                                                     "status": "ACTIVE",
                                                     "createdAt": "2024-01-15T10:30:00",
@@ -74,10 +74,10 @@ public class ProductController {
                                                   {
                                                     "id": "prod-002",
                                                     "name": "Laptop Dell XPS 13",
-                                                    "description": "Laptop ultrabook con procesador Intel i7",
+                                                    "description": "Ultrabook laptop with Intel i7 processor",
                                                     "price": 1299.99,
                                                     "category": "Computers",
-                                                    "stock": 25,
+                                                    "quantity": 25,
                                                     "sellerId": "seller-456",
                                                     "status": "ACTIVE",
                                                     "createdAt": "2024-01-16T14:20:00",
@@ -102,13 +102,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Parámetros de filtro inválidos",
+                    description = "Invalid filter parameters",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Invalid Filter Parameters Response",
-                                    description = "Ejemplo de respuesta cuando los parámetros de filtro son inválidos",
+                                    description = "Example response when filter parameters are invalid",
                                     value = """
                                             {
                                               "message": "Invalid filter parameters: price range is invalid",
@@ -121,13 +121,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Error interno del servidor",
+                    description = "Internal server error",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Internal Server Error Response",
-                                    description = "Ejemplo de respuesta de error interno del servidor",
+                                    description = "Example response when internal server error occurs",
                                     value = """
                                             {
                                               "message": "Internal server error occurred while retrieving products",
@@ -140,27 +140,27 @@ public class ProductController {
             )
     })
     public ResponseEntity<ApiResponseDTO<Page<Product>>> getAllProducts(
-            @Parameter(description = "Criterios de filtrado para productos") ProductFilterCriteria filters,
-            @Parameter(description = "Información de paginación") Pageable pageable) {
+            @Parameter(description = "Filter criteria for products") ProductFilterCriteria filters,
+            @Parameter(description = "Pagination information") Pageable pageable) {
         ApiResponseDTO<Page<Product>> products = productService.getAllProducts(filters, pageable);
         return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{productId}")
     @Operation(
-            summary = "Obtener producto por ID",
-            description = "Obtiene un producto específico mediante su identificador único"
+            summary = "Get product by ID",
+            description = "Retrieve a specific product by its unique identifier"
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Producto encontrado exitosamente",
+                    description = "Product found successfully",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Product Found Response",
-                                    description = "Ejemplo de respuesta cuando el producto es encontrado",
+                                    description = "Example response when product is found",
                                     value = """
                                             {
                                               "message": "Product found successfully",
@@ -168,10 +168,10 @@ public class ProductController {
                                               "data": {
                                                 "id": "prod-001",
                                                 "name": "Smartphone Samsung Galaxy S24",
-                                                "description": "Teléfono inteligente con pantalla de 6.1 pulgadas y cámara de 50MP",
+                                                "description": "Smartphone with 6.1 inch display and 50MP camera",
                                                 "price": 899.99,
                                                 "category": "Electronics",
-                                                "stock": 50,
+                                                "quantity": 50,
                                                 "sellerId": "seller-123",
                                                 "status": "ACTIVE",
                                                 "createdAt": "2024-01-15T10:30:00",
@@ -184,13 +184,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Producto no encontrado",
+                    description = "Product not found",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Product Not Found Response",
-                                    description = "Ejemplo de respuesta cuando el producto no existe",
+                                    description = "Example response when product does not exist",
                                     value = """
                                             {
                                               "message": "Product not found with ID: prod-999",
@@ -203,13 +203,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Error interno del servidor",
+                    description = "Internal server error",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Internal Server Error Response",
-                                    description = "Ejemplo de respuesta de error interno del servidor",
+                                    description = "Example response when internal server error occurs",
                                     value = """
                                             {
                                               "message": "Internal server error occurred while retrieving product",
@@ -222,7 +222,7 @@ public class ProductController {
             )
     })
     public ResponseEntity<ApiResponseDTO<Product>> getProductById(
-            @Parameter(description = "ID único del producto", required = true, example = "prod-001") @PathVariable("productId") String id) {
+            @Parameter(description = "Unique product ID", required = true, example = "prod-001") @PathVariable("productId") String id) {
         ApiResponseDTO<Product> product = productService.getProductById(id);
         return ResponseEntity.ok(product);
     }
@@ -230,26 +230,25 @@ public class ProductController {
     @PreAuthorize("hasRole('admin_client_role') or hasRole('seller_client_role')")
     @PostMapping
     @Operation(
-            summary = "Crear nuevo producto",
-            description = "Crea un nuevo producto en el marketplace. Requiere autenticación como administrador o vendedor.",
+            summary = "Create a new product",
+            description = "Create a new product in the marketplace. Requires authentication as admin or seller.",
             security = @SecurityRequirement(name = "bearerAuth"),
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Información del producto a crear",
+                    description = "Product information to create",
                     required = true,
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ProductDto.class),
                             examples = @ExampleObject(
                                     name = "Create Product Request",
-                                    description = "Ejemplo de solicitud para crear un producto",
+                                    description = "Example request to create a product",
                                     value = """
                                             {
                                               "name": "Smartphone Samsung Galaxy S24",
-                                              "description": "Teléfono inteligente con pantalla de 6.1 pulgadas y cámara de 50MP",
+                                              "description": "Smartphone with 6.1 inch display and 50MP camera",
                                               "price": 899.99,
                                               "category": "Electronics",
-                                              "stock": 50,
-                                              "status": "ACTIVE"
+                                              "quantity": 50
                                             }
                                             """
                             )
@@ -259,13 +258,13 @@ public class ProductController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "201",
-                    description = "Producto creado exitosamente",
+                    description = "Product created successfully",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Product Created Response",
-                                    description = "Ejemplo de respuesta cuando el producto se crea exitosamente",
+                                    description = "Example response when product is created successfully",
                                     value = """
                                             {
                                               "message": "Product created successfully",
@@ -273,10 +272,10 @@ public class ProductController {
                                               "data": {
                                                 "id": "prod-003",
                                                 "name": "Smartphone Samsung Galaxy S24",
-                                                "description": "Teléfono inteligente con pantalla de 6.1 pulgadas y cámara de 50MP",
+                                                "description": "Smartphone with 6.1 inch display and 50MP camera",
                                                 "price": 899.99,
                                                 "category": "Electronics",
-                                                "stock": 50,
+                                                "quantity": 50,
                                                 "sellerId": "seller-789",
                                                 "status": "ACTIVE",
                                                 "createdAt": "2024-01-17T09:15:00",
@@ -289,13 +288,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Datos del producto inválidos",
+                    description = "Invalid product data or validation error",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Validation Error Response",
-                                    description = "Ejemplo de respuesta cuando la validación falla",
+                                    description = "Example response when validation fails",
                                     value = """
                                             {
                                               "message": "Validation failed: name cannot be blank, price must be greater than 0",
@@ -308,13 +307,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "No autorizado - Token inválido o expirado",
+                    description = "Unauthorized - Invalid or expired token",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Unauthorized Response",
-                                    description = "Ejemplo de respuesta cuando el token es inválido",
+                                    description = "Example response when token is invalid",
                                     value = """
                                             {
                                               "message": "Authentication required",
@@ -327,13 +326,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Acceso denegado - No tiene permisos suficientes",
+                    description = "Access denied - Insufficient permissions",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Access Denied Response",
-                                    description = "Ejemplo de respuesta cuando el usuario no tiene permisos",
+                                    description = "Example response when user lacks permissions",
                                     value = """
                                             {
                                               "message": "Access denied - insufficient permissions",
@@ -346,13 +345,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Error interno del servidor",
+                    description = "Internal server error",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Internal Server Error Response",
-                                    description = "Ejemplo de respuesta de error interno del servidor",
+                                    description = "Example response when internal server error occurs",
                                     value = """
                                             {
                                               "message": "Internal server error occurred while creating product",
@@ -365,7 +364,7 @@ public class ProductController {
             )
     })
     ResponseEntity<ApiResponseDTO<Product>> createProduct(
-            @Parameter(description = "Datos del nuevo producto", required = true) @Valid @RequestBody ProductDto productDto,
+            @Parameter(description = "New product data", required = true) @Valid @RequestBody ProductDto productDto,
             @Parameter(hidden = true) @AuthenticationPrincipal Jwt jwt) {
         // Extract the seller ID from the JWT token
         String sellerId = jwt.getClaim("sub");
@@ -377,20 +376,20 @@ public class ProductController {
     @PreAuthorize("hasRole('admin_client_role') or hasRole('seller_client_role')")
     @DeleteMapping("/{productId}")
     @Operation(
-            summary = "Eliminar producto",
-            description = "Elimina un producto del marketplace. Requiere autenticación como administrador o vendedor. Esta acción es irreversible.",
+            summary = "Delete a product",
+            description = "Delete a product from the marketplace. Requires authentication as admin or seller. This action is irreversible.",
             security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Producto eliminado exitosamente",
+                    description = "Product deleted successfully",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Product Deleted Response",
-                                    description = "Ejemplo de respuesta cuando el producto se elimina exitosamente",
+                                    description = "Example response when product is deleted successfully",
                                     value = """
                                             {
                                               "message": "Product deleted successfully",
@@ -403,13 +402,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Producto no encontrado",
+                    description = "Product not found",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Product Not Found Response",
-                                    description = "Ejemplo de respuesta cuando el producto no existe",
+                                    description = "Example response when product does not exist",
                                     value = """
                                             {
                                               "message": "Product not found with ID: prod-999",
@@ -422,13 +421,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "No autorizado - Token inválido o expirado",
+                    description = "Unauthorized - Invalid or expired token",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Unauthorized Response",
-                                    description = "Ejemplo de respuesta cuando el token es inválido",
+                                    description = "Example response when token is invalid",
                                     value = """
                                             {
                                               "message": "Authentication required",
@@ -441,13 +440,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Acceso denegado - No tiene permisos suficientes",
+                    description = "Access denied - Insufficient permissions",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Access Denied Response",
-                                    description = "Ejemplo de respuesta cuando el usuario no tiene permisos",
+                                    description = "Example response when user lacks permissions",
                                     value = """
                                             {
                                               "message": "Access denied - insufficient permissions",
@@ -460,13 +459,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Error interno del servidor",
+                    description = "Internal server error",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Internal Server Error Response",
-                                    description = "Ejemplo de respuesta de error interno del servidor",
+                                    description = "Example response when internal server error occurs",
                                     value = """
                                             {
                                               "message": "Internal server error occurred while deleting product",
@@ -479,7 +478,7 @@ public class ProductController {
             )
     })
     public ResponseEntity<ApiResponseDTO<Void>> deleteProduct(
-            @Parameter(description = "ID único del producto a eliminar", required = true, example = "prod-001") @PathVariable("productId") String id) {
+            @Parameter(description = "Unique product ID to delete", required = true, example = "prod-001") @PathVariable("productId") String id) {
         ApiResponseDTO<Void> response = productService.deleteProduct(id);
         return ResponseEntity.ok(response);
     }
@@ -487,25 +486,25 @@ public class ProductController {
     @PreAuthorize("hasRole('admin_client_role') or hasRole('seller_client_role')")
     @PutMapping("/{productId}")
     @Operation(
-            summary = "Actualizar producto completo",
-            description = "Actualiza todos los campos de un producto existente. Requiere autenticación como administrador o vendedor.",
+            summary = "Update a product",
+            description = "Update all fields of an existing product. Requires authentication as admin or seller.",
             security = @SecurityRequirement(name = "bearerAuth"),
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Información actualizada del producto",
+                    description = "Updated product information",
                     required = true,
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ProductDto.class),
                             examples = @ExampleObject(
                                     name = "Update Product Request",
-                                    description = "Ejemplo de solicitud para actualizar un producto",
+                                    description = "Example request to update a product",
                                     value = """
                                             {
                                               "name": "Smartphone Samsung Galaxy S24 Ultra",
-                                              "description": "Teléfono inteligente premium con pantalla de 6.8 pulgadas y cámara de 200MP",
+                                              "description": "Premium smartphone with 6.8 inch display and 200MP camera",
                                               "price": 1199.99,
                                               "category": "Electronics",
-                                              "stock": 30,
+                                              "quantity": 30,
                                               "status": "ACTIVE"
                                             }
                                             """
@@ -516,13 +515,13 @@ public class ProductController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Producto actualizado exitosamente",
+                    description = "Product updated successfully",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Product Updated Response",
-                                    description = "Ejemplo de respuesta cuando el producto se actualiza exitosamente",
+                                    description = "Example response when product is updated successfully",
                                     value = """
                                             {
                                               "message": "Product updated successfully",
@@ -530,10 +529,10 @@ public class ProductController {
                                               "data": {
                                                 "id": "prod-001",
                                                 "name": "Smartphone Samsung Galaxy S24 Ultra",
-                                                "description": "Teléfono inteligente premium con pantalla de 6.8 pulgadas y cámara de 200MP",
+                                                "description": "Premium smartphone with 6.8 inch display and 200MP camera",
                                                 "price": 1199.99,
                                                 "category": "Electronics",
-                                                "stock": 30,
+                                                "quantity": 30,
                                                 "sellerId": "seller-123",
                                                 "status": "ACTIVE",
                                                 "createdAt": "2024-01-15T10:30:00",
@@ -546,13 +545,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Datos del producto inválidos",
+                    description = "Invalid product data or validation error",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Validation Error Response",
-                                    description = "Ejemplo de respuesta cuando la validación falla",
+                                    description = "Example response when validation fails",
                                     value = """
                                             {
                                               "message": "Validation failed: name cannot be blank, price must be greater than 0",
@@ -565,13 +564,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Producto no encontrado",
+                    description = "Product not found",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Product Not Found Response",
-                                    description = "Ejemplo de respuesta cuando el producto no existe",
+                                    description = "Example response when product does not exist",
                                     value = """
                                             {
                                               "message": "Product not found with ID: prod-999",
@@ -584,13 +583,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "No autorizado - Token inválido o expirado",
+                    description = "Unauthorized - Invalid or expired token",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Unauthorized Response",
-                                    description = "Ejemplo de respuesta cuando el token es inválido",
+                                    description = "Example response when token is invalid",
                                     value = """
                                             {
                                               "message": "Authentication required",
@@ -603,13 +602,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Acceso denegado - No tiene permisos suficientes",
+                    description = "Access denied - Insufficient permissions",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Access Denied Response",
-                                    description = "Ejemplo de respuesta cuando el usuario no tiene permisos",
+                                    description = "Example response when user lacks permissions",
                                     value = """
                                             {
                                               "message": "Access denied - insufficient permissions",
@@ -622,13 +621,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Error interno del servidor",
+                    description = "Internal server error",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Internal Server Error Response",
-                                    description = "Ejemplo de respuesta de error interno del servidor",
+                                    description = "Example response when internal server error occurs",
                                     value = """
                                             {
                                               "message": "Internal server error occurred while updating product",
@@ -641,8 +640,8 @@ public class ProductController {
             )
     })
     public ResponseEntity<ApiResponseDTO<Product>> updateProduct(
-            @Parameter(description = "ID único del producto a actualizar", required = true, example = "prod-001") @PathVariable("productId") String id,
-            @Parameter(description = "Datos actualizados del producto", required = true) @RequestBody ProductDto productDto) {
+            @Parameter(description = "Unique product ID to update", required = true, example = "prod-001") @PathVariable("productId") String id,
+            @Parameter(description = "Updated product data", required = true) @RequestBody ProductDto productDto) {
         Product mapToProduct = ProductDto.mapToProduct(productDto, null);
         ApiResponseDTO<Product> updatedProduct = productService.updateProduct(id, mapToProduct);
         return ResponseEntity.ok(updatedProduct);
@@ -651,23 +650,23 @@ public class ProductController {
     @PreAuthorize("hasRole('admin_client_role') or hasRole('seller_client_role')")
     @PatchMapping("/{productId}")
     @Operation(
-            summary = "Actualizar producto parcial",
-            description = "Actualiza campos específicos de un producto existente. Requiere autenticación como administrador o vendedor.",
+            summary = "Partially update a product",
+            description = "Update specific fields of an existing product. Requires authentication as admin or seller.",
             security = @SecurityRequirement(name = "bearerAuth"),
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Campos específicos del producto a actualizar",
+                    description = "Specific product fields to update",
                     required = true,
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ProductUpdateDto.class),
                             examples = @ExampleObject(
                                     name = "Partial Update Product Request",
-                                    description = "Ejemplo de solicitud para actualizar parcialmente un producto",
+                                    description = "Example request to partially update a product",
                                     value = """
                                             {
                                               "price": 999.99,
-                                              "stock": 75,
-                                              "description": "Teléfono inteligente con pantalla de 6.1 pulgadas - OFERTA ESPECIAL"
+                                              "quantity": 75,
+                                              "description": "Smartphone with 6.1 inch display - SPECIAL OFFER"
                                             }
                                             """
                             )
@@ -677,13 +676,13 @@ public class ProductController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Producto actualizado exitosamente",
+                    description = "Product updated successfully",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Product Partially Updated Response",
-                                    description = "Ejemplo de respuesta cuando el producto se actualiza parcialmente",
+                                    description = "Example response when product is partially updated",
                                     value = """
                                             {
                                               "message": "Product updated successfully",
@@ -691,10 +690,10 @@ public class ProductController {
                                               "data": {
                                                 "id": "prod-001",
                                                 "name": "Smartphone Samsung Galaxy S24",
-                                                "description": "Teléfono inteligente con pantalla de 6.1 pulgadas - OFERTA ESPECIAL",
+                                                "description": "Smartphone with 6.1 inch display - SPECIAL OFFER",
                                                 "price": 999.99,
                                                 "category": "Electronics",
-                                                "stock": 75,
+                                                "quantity": 75,
                                                 "sellerId": "seller-123",
                                                 "status": "ACTIVE",
                                                 "createdAt": "2024-01-15T10:30:00",
@@ -707,13 +706,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Datos del producto inválidos",
+                    description = "Invalid product data or validation error",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Validation Error Response",
-                                    description = "Ejemplo de respuesta cuando la validación falla",
+                                    description = "Example response when validation fails",
                                     value = """
                                             {
                                               "message": "Validation failed: price must be greater than 0",
@@ -726,13 +725,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Producto no encontrado",
+                    description = "Product not found",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Product Not Found Response",
-                                    description = "Ejemplo de respuesta cuando el producto no existe",
+                                    description = "Example response when product does not exist",
                                     value = """
                                             {
                                               "message": "Product not found with ID: prod-999",
@@ -745,13 +744,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "No autorizado - Token inválido o expirado",
+                    description = "Unauthorized - Invalid or expired token",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Unauthorized Response",
-                                    description = "Ejemplo de respuesta cuando el token es inválido",
+                                    description = "Example response when token is invalid",
                                     value = """
                                             {
                                               "message": "Authentication required",
@@ -764,13 +763,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Acceso denegado - No tiene permisos suficientes",
+                    description = "Access denied - Insufficient permissions",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Access Denied Response",
-                                    description = "Ejemplo de respuesta cuando el usuario no tiene permisos",
+                                    description = "Example response when user lacks permissions",
                                     value = """
                                             {
                                               "message": "Access denied - insufficient permissions",
@@ -783,13 +782,13 @@ public class ProductController {
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Error interno del servidor",
+                    description = "Internal server error",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponseDTO.class),
                             examples = @ExampleObject(
                                     name = "Internal Server Error Response",
-                                    description = "Ejemplo de respuesta de error interno del servidor",
+                                    description = "Example response when internal server error occurs",
                                     value = """
                                             {
                                               "message": "Internal server error occurred while updating product",
@@ -802,8 +801,8 @@ public class ProductController {
             )
     })
     public ResponseEntity<?> updatePartialProduct(
-            @Parameter(description = "ID único del producto a actualizar", required = true, example = "prod-001") @PathVariable("productId") String productId,
-            @Parameter(description = "Datos parciales para actualizar el producto", required = true) @RequestBody ProductUpdateDto productUpdateDto) {
+            @Parameter(description = "Unique product ID to update", required = true, example = "prod-001") @PathVariable("productId") String productId,
+            @Parameter(description = "Partial product data to update", required = true) @RequestBody ProductUpdateDto productUpdateDto) {
         Product mapToProduct = ProductUpdateDto.mapToProduct(productUpdateDto);
         ApiResponseDTO<Product> updatedProduct = productService.updatePartialProduct(productId, mapToProduct);
         return ResponseEntity.ok(updatedProduct);
