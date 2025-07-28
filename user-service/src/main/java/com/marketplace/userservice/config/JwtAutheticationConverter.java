@@ -19,16 +19,10 @@ import java.util.stream.Stream;
 
 /**
  * Conversor de JWT a token de autenticación de Spring Security.
- * Esta clase se encarga de transformar los tokens JWT recibidos en objetos
- * de autenticación que Spring Security puede entender y utilizar para autorización.
  */
 @Component
 public class JwtAutheticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
-    /**
-     * Conversor estándar de Spring Security para extraer autoridades básicas del JWT.
-     * Este conversor extrae los roles del claim 'scope' o 'scp' por defecto.
-     */
     private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 
     /**

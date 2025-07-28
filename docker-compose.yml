@@ -23,6 +23,19 @@ services:
     volumes:
       - postgres-product-data:/var/lib/postgresql/data
 
+  mysql-order:
+    image: mysql:latest
+    container_name: mysql-order
+    environment:
+      MYSQL_ROOT_PASSWORD: order
+      MYSQL_DATABASE: order
+      MYSQL_USER: order
+      MYSQL_PASSWORD: order
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql-order-data:/var/lib/mysql
+
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     command: start-dev
@@ -48,3 +61,6 @@ volumes:
     driver: local
   keycloak-data:
     driver: local
+  mysql-order-data:
+    driver: local
+

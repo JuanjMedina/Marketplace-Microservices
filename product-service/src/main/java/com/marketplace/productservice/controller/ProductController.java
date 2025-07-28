@@ -227,7 +227,7 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
-    @PreAuthorize("hasRole('admin_client_role') or hasRole('seller_client_role')")
+    @PreAuthorize("hasRole('admin_client_role') or hasRole('seller_client_role') or hasRole('buyer_client_role')")
     @PostMapping
     @Operation(
             summary = "Create a new product",

@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 @Schema(description = "User data transfer object for creating product")
 public record ProductDto(
 
+
         @Schema(description = "Name for the product", example = "Potato", required = true)
         @NotBlank(message = "Product name cannot be blank")
         @Size(min = 3, max = 50, message = "Product name must be between 3 and 50 characters")
@@ -27,7 +28,12 @@ public record ProductDto(
         @Schema(description = "The quantity that you have ", example = "12", required = true)
         @NotNull(message = "Quantity cannot be null")
         @Min(value = 1, message = "Quantity must be at least 1")
-        Integer quantity
+        Integer quantity,
+
+        @Schema(description = "Category of the product", example = "Vegetables", required = true)
+        @NotBlank(message = "Category cannot be blank")
+        String category
+
 
 ) {
     public static Product mapToProduct(ProductDto productDto, String sellerId) {
@@ -37,6 +43,7 @@ public record ProductDto(
                 .description(productDto.description())
                 .price(productDto.price())
                 .quantity(productDto.quantity())
+                .category(productDto.category())
                 .build();
     }
 
