@@ -1,5 +1,6 @@
 package marketplace.orderservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,6 +35,7 @@ public class Order {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "order", fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonManagedReference
     private List<OrderItem> items = new ArrayList<>();
 
     public void addItem(OrderItem item) {

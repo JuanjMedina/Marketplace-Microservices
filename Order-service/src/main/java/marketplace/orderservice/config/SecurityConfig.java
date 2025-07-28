@@ -15,9 +15,15 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final JwtAuthenticationConverter jwtAuthenticationConverter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-    public SecurityConfig(JwtAuthenticationConverter jwtAuthenticationConverter) {
+    public SecurityConfig(JwtAuthenticationConverter jwtAuthenticationConverter,
+                         CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
+                         CustomAccessDeniedHandler customAccessDeniedHandler) {
         this.jwtAuthenticationConverter = jwtAuthenticationConverter;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
     }
 
     @Bean
@@ -32,6 +38,8 @@ public class SecurityConfig {
                     oauth.jwt(jwt -> {
                         jwt.jwtAuthenticationConverter(jwtAuthenticationConverter);
                     });
+                    oauth.authenticationEntryPoint(customAuthenticationEntryPoint);
+                    oauth.accessDeniedHandler(customAccessDeniedHandler);
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();

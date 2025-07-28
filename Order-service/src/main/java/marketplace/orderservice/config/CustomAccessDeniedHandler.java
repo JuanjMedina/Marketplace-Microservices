@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import marketplace.orderservice.dto.AuthErrorResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
@@ -12,8 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Manejador personalizado para errores de acceso denegado (403 Forbidden).
@@ -32,13 +31,17 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.FORBIDDEN.value());
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpStatus.FORBIDDEN.value());
-        body.put("error", "Forbidden");
-        body.put("message", "Acceso denegado: No tienes permisos para acceder a este recurso");
-        body.put("path", request.getRequestURI());
-        body.put("timestamp", LocalDateTime.now().toString());
+        AuthErrorResponseDto errorResponse = AuthErrorResponseDto.builder()
+                .status(HttpStatus.FORBIDDEN.value())
+                .error("ACCESS_DENIED")
+                .errorCode("AUTH_403")
+                .message("Acceso denegado: No tienes permisos para acceder a este recurso")
+                .path(request.getRequestURI())
+                .timestamp(LocalDateTime.now())
+                .suggestion("Contacta al administrador del sistema para obtener los permisos necesarios")
+                .details("El usuario está autenticado pero no tiene los roles/permisos requeridos")
+                .build();
 
-        objectMapper.writeValue(response.getOutputStream(), body);
+        objectMapper.writeValue(response.getOutputStream(), errorResponse);
     }
 }
