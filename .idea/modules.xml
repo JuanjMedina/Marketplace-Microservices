@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Marketplace-Microservices.iml" filepath="$PROJECT_DIR$/.idea/Marketplace-Microservices.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Marketplace-Microservices.product-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Marketplace-Microservices.product-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Order-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Order-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.marketplace.product-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.marketplace.product-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/product-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/product-service.main.iml" />
     </modules>
