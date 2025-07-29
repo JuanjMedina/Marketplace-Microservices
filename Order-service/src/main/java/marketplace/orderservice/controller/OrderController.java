@@ -9,9 +9,12 @@ import marketplace.orderservice.mapper.OrderMapper;
 import marketplace.orderservice.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -42,6 +45,31 @@ public class OrderController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+    }
+
+    @PreAuthorize("hasRole('admin_client_role') or hasRole('buyer_client_role')")
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponseDTO<List<Order>>> getMyOrders (@AuthenticationPrincipal Jwt jwt ){
+        UUID userId = UUID.fromString(jwt.getSubject());
+        ApiResponseDTO<List<Order>> response = orderService.getMyOrders(userId);
+        return ResponseEntity.ok(response);
+    }
+
+
+    @PreAuthorize("hasRole('admin_client_role')")
+    @GetMapping("/admin/all")
+    public ResponseEntity<?> getAllOrders(){
+        ApiResponseDTO<List<Order>> response = orderService.getAllOrders();
+        return ResponseEntity.ok(response);
+    }
+
+    @PreAuthorize("hasRole('admin_client_role') or hasRole('buyer_client_role')")
+    @GetMapping("/{orderId}")
+    public ResponseEntity<ApiResponseDTO<Order>> getOrderById(@PathVariable UUID orderId,
+                                                              @AuthenticationPrincipal Jwt jwt) {
+        UUID userId = UUID.fromString(jwt.getSubject());
+        ApiResponseDTO<Order> response = orderService.getOrderById(orderId, userId);
+        return ResponseEntity.ok(response);
     }
 
 }

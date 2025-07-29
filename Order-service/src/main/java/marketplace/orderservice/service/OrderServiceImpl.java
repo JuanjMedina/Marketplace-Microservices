@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import marketplace.orderservice.dto.ApiResponseDTO;
 import marketplace.orderservice.dto.CreateOrderDto;
 import marketplace.orderservice.dto.OrderItemDto;
-import marketplace.orderservice.dto.OrderResponseDto;
 import marketplace.orderservice.dto.ProductDto;
 import marketplace.orderservice.entity.Order;
 import marketplace.orderservice.entity.OrderItem;
@@ -27,6 +26,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -95,6 +95,19 @@ public class OrderServiceImpl implements OrderService {
             log.error("Unexpected error calling product service for productId: {}, error: {}", productId, e.getMessage());
             throw new OrderException("Unexpected error retrieving product information");
         }
+    }
+
+    @Override
+    public ApiResponseDTO<List<Order>> getMyOrders(UUID userId) {
+        List<Order> order = orderRepository.findByBuyerId(userId);
+        if(order.isEmpty()){
+        throw new OrderException("No orders found for user: " + userId);
+        }
+        return ApiResponseDTO.<List<Order>>builder()
+                .success(true)
+                .message("Orders retrieved successfully")
+                .data(order)
+                .build();
     }
 
     @Override
@@ -178,8 +191,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ApiResponseDTO<Order> getOrderById(Long orderId) {
-        return null;
+    public ApiResponseDTO<Order> getOrderById(UUID orderId, UUID userId) {
+        Optional<Order> myOrder = orderRepository.findByIdAndBuyerId(orderId, userId);
+        if (myOrder.isEmpty()) {
+            throw new OrderException("Order not found for user: " + userId + " with order ID: " + orderId);
+        }
+        return ApiResponseDTO.<Order>builder()
+                .success(true)
+                .message("Order retrieved successfully")
+                .data(myOrder.get())
+                .build();
     }
 
     @Override
@@ -189,8 +210,14 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ApiResponseDTO<List<Order>> getAllOrders() {
-        return null;
+        List<Order> orders = orderRepository.findAll();
+        if (orders.isEmpty()) {
+            throw new OrderException("No orders found");
+        }
+        return ApiResponseDTO.<List<Order>>builder()
+                .success(true)
+                .message("Orders retrieved successfully")
+                .data(orders)
+                .build();
     }
-
-
 }

@@ -12,13 +12,18 @@ public interface OrderService {
 
     ApiResponseDTO<Order> createOrder(CreateOrderDto order, UUID userId);
 
-    ApiResponseDTO<Order> getOrderById(Long orderId);
+
+    ApiResponseDTO<Order> getOrderById(UUID orderId, UUID userId);
 
     ApiResponseDTO<Order> updateOrder(Long orderId, Order orderDetails);
 
     ApiResponseDTO<List<Order>> getAllOrders();
 
     ApiResponseDTO<ProductDto> getProductById(UUID productId, String token);
+
+    ApiResponseDTO<List<Order>> getMyOrders(UUID userId);
+
+
 
 
 }
