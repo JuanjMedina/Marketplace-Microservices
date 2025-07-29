@@ -27,7 +27,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/v1/products")
 @AllArgsConstructor
 @Tag(name = "Product Management", description = "Operations for managing products in the marketplace")
 public class ProductController {

@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/keycloak/users")
+@RequestMapping("/api/v1/keycloak/users")
 @Tag(name = "Keycloak User Management", description = "Operations for managing users in Keycloak realm")
 public class KeycloakController {
 
