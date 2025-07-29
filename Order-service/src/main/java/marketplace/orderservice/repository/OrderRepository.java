@@ -1,7 +1,6 @@
 package marketplace.orderservice.repository;
 
 import marketplace.orderservice.entity.Order;
-import marketplace.orderservice.entity.OrderItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
