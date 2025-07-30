@@ -48,7 +48,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderServiceImpl(OrderRepository orderRepository, WebClient.Builder webclient, OrderMapper orderMapper) {
         this.orderRepository = orderRepository;
         this.webclient = webclient
-                .baseUrl("http://localhost:8081/api/products")
+                .baseUrl("http://gateway-service/api/v1/products")
                 .build();
         this.orderMapper = orderMapper;
     }
