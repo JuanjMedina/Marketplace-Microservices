@@ -3,6 +3,7 @@ package marketplace.orderservice.service;
 import lombok.extern.slf4j.Slf4j;
 import marketplace.orderservice.dto.ApiResponseDTO;
 import marketplace.orderservice.dto.CreateOrderDto;
+import marketplace.orderservice.dto.OrderCreatedEventDto;
 import marketplace.orderservice.dto.OrderItemDto;
 import marketplace.orderservice.dto.ProductDto;
 import marketplace.orderservice.entity.Order;
@@ -15,6 +16,7 @@ import marketplace.orderservice.mapper.OrderMapper;
 import marketplace.orderservice.repository.OrderRepository;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final WebClient webclient;
     private final OrderMapper orderMapper;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaProducerService kafkaProducerService;
 
     private String extractToken() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
@@ -45,12 +49,15 @@ public class OrderServiceImpl implements OrderService {
         return null;
     }
 
-    public OrderServiceImpl(OrderRepository orderRepository, WebClient.Builder webclient, OrderMapper orderMapper) {
+    public OrderServiceImpl(OrderRepository orderRepository, WebClient.Builder webclient, OrderMapper orderMapper,
+                           KafkaTemplate<String, String> kafkaTemplate, KafkaProducerService kafkaProducerService) {
         this.orderRepository = orderRepository;
         this.webclient = webclient
                 .baseUrl("http://gateway-service/api/v1/products")
                 .build();
         this.orderMapper = orderMapper;
+        this.kafkaTemplate = kafkaTemplate;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     @Override
@@ -78,6 +85,8 @@ public class OrderServiceImpl implements OrderService {
             if (response == null || !response.success()) {
                 throw new ProductNotFoundException(productId.toString());
             }
+
+
 
             return response;
 
@@ -137,14 +146,29 @@ public class OrderServiceImpl implements OrderService {
 
             log.info("Order created successfully with ID: {} for user: {}", savedOrder.getId(), userId);
 
+            // Publish order created event after successful order creation
+            try {
+                OrderCreatedEventDto event = OrderCreatedEventDto.fromOrder(savedOrder);
+                kafkaProducerService.sendOrderCreatedEvent(event);
+                log.info("Order created event published successfully for order: {}", savedOrder.getId());
+            } catch (Exception kafkaException) {
+                // Log error but don't fail the transaction - the order was created successfully
+                log.error("Failed to publish order created event for order: {}. Event will be missed. Error: {}",
+                         savedOrder.getId(), kafkaException.getMessage(), kafkaException);
+                // Consider implementing a retry mechanism or dead letter queue here
+            }
+
             return ApiResponseDTO.<Order>builder()
                     .success(true)
                     .message("Order created successfully")
                     .data(savedOrder)
                     .build();
 
+        } catch (OrderException e) {
+            log.error("Business logic error creating order for user: {}, error: {}", userId, e.getMessage());
+            throw e; // Re-throw business exceptions
         } catch (Exception e) {
-            log.error("Error creating order for user: {}, error: {}", userId, e.getMessage());
+            log.error("Unexpected error creating order for user: {}, error: {}", userId, e.getMessage(), e);
             throw new OrderException("Failed to create order: " + e.getMessage());
         }
     }
