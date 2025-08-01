@@ -19,7 +19,7 @@ public class PaymentProcessingService {
             OrderCreatedEventDto orderEvent = objectMapper.readValue(orderEventJson, OrderCreatedEventDto.class);
 
             log.info("Processing payment for order: {} with total amount: {}",
-                    orderEvent.getOrderId(), orderEvent.getTotalAmount());
+                    orderEvent.orderId(), orderEvent.totalAmount());
 
             // Here you would implement your payment processing logic
             processPayment(orderEvent);
@@ -32,12 +32,21 @@ public class PaymentProcessingService {
 
     private void processPayment(OrderCreatedEventDto orderEvent) {
         log.info("Payment processing initiated for order: {} with {} items",
-                orderEvent.getOrderId(), orderEvent.getItems().size());
+                orderEvent.orderId(), orderEvent.items().size());
+
+
+        // Simulate payment processing logic
+        if(Math.random() < 0.1){
+            log.error("Simulated payment failure for order: {}", orderEvent.orderId());
+            throw new RuntimeException("Simulated payment failure");
+        } else {
+            log.info("Payment successfully processed for order: {}", orderEvent.orderId());
+        }
 
         // Log order details for demonstration
-        orderEvent.getItems().forEach(item ->
+        orderEvent.items().forEach(item ->
             log.info("Item: {} - Quantity: {} - Price: {}",
-                    item.getProductName(), item.getQuantity(), item.getTotalPrice())
+                    item.productName(), item.quantity(), item.totalPrice())
         );
     }
 }
