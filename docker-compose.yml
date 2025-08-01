@@ -36,6 +36,19 @@ services:
     volumes:
       - mysql-order-data:/var/lib/mysql
 
+  mysql-payment:
+    image: mysql:latest
+    container_name: mysql-payment
+    environment:
+      MYSQL_ROOT_PASSWORD: payment
+      MYSQL_DATABASE: payment
+      MYSQL_USER: payment
+      MYSQL_PASSWORD: payment
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql-payment-data:/var/lib/mysql
+
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     command: start-dev
@@ -83,5 +96,7 @@ volumes:
   keycloak-data:
     driver: local
   mysql-order-data:
+    driver: local
+  mysql-payment-data:
     driver: local
 
